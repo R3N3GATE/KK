@@ -1,525 +1,112 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>K'K — Ideias de Presentes</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg: #fbf1ee;
-    --card: #fffaf7;
-    --ink: #3b2430;
-    --rose: #b8395a;
-    --rose-deep: #8f2c47;
-    --gold: #b3894f;
-    --muted: #8c6e77;
-    --line: #e7d4d0;
-    --shadow: 0 18px 40px -22px rgba(59,36,48,0.35);
-  }
-
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Jost', sans-serif;
-    font-weight:400;
-    min-height:100vh;
-    overflow-x:hidden;
-  }
-  h1,h2,h3{
-    font-family:'Fraunces', serif;
-    margin:0;
-    font-weight:600;
-  }
-  button{font-family:inherit; cursor:pointer;}
-  [contenteditable]{outline:none;}
-  [contenteditable]:empty:before{
-    content:attr(data-placeholder);
-    color:var(--muted);
-    opacity:0.65;
-  }
-  [contenteditable]:focus{
-    background:rgba(184,57,90,0.06);
-    border-radius:6px;
-  }
-
-  /* ---------- decorative heart-line ---------- */
-  .heart-line{
-    width:min(320px, 70vw);
-    height:auto;
-    display:block;
-    margin:1.4rem auto 0;
-  }
-  .heart-line path{
-    fill:none;
-    stroke:var(--rose);
-    stroke-width:1.4;
-    stroke-linecap:round;
-  }
-  .heart-line .dot{
-    fill:var(--rose);
-    stroke:none;
-  }
-
-  /* ---------- hamburger ---------- */
-  #menu-btn{
-    position:fixed;
-    top:22px;
-    left:22px;
-    z-index:60;
-    width:46px;
-    height:46px;
-    border:none;
-    border-radius:14px;
-    background:var(--card);
-    box-shadow:var(--shadow);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:5px;
-  }
-  #menu-btn span{
-    width:20px;
-    height:2px;
-    background:var(--rose-deep);
-    border-radius:2px;
-    transition:transform .28s ease, opacity .2s ease;
-  }
-  #menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
-  #menu-btn.open span:nth-child(2){opacity:0;}
-  #menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
-
-  #overlay{
-    position:fixed; inset:0;
-    background:rgba(59,36,48,0.28);
-    opacity:0; pointer-events:none;
-    transition:opacity .25s ease;
-    z-index:50;
-  }
-  #overlay.show{opacity:1; pointer-events:auto;}
-
-  #drawer{
-    position:fixed;
-    top:0; left:0; bottom:0;
-    width:250px;
-    background:var(--card);
-    box-shadow:var(--shadow);
-    z-index:55;
-    transform:translateX(-104%);
-    transition:transform .32s cubic-bezier(.2,.8,.2,1);
-    padding:100px 28px 28px;
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-  }
-  #drawer.open{transform:translateX(0);}
-  #drawer .brand{
-    font-family:'Fraunces', serif;
-    font-style:italic;
-    font-size:1.5rem;
-    color:var(--rose-deep);
-    margin-bottom:18px;
-  }
-  #drawer a{
-    text-decoration:none;
-    color:var(--ink);
-    font-size:1.02rem;
-    padding:12px 10px;
-    border-radius:10px;
-    border-left:3px solid transparent;
-    transition:background .2s ease, border-color .2s ease;
-  }
-  #drawer a:hover, #drawer a.active{
-    background:rgba(184,57,90,0.08);
-    border-left-color:var(--rose);
-    color:var(--rose-deep);
-  }
-
-  /* ---------- layout shell ---------- */
-  main{max-width:920px; margin:0 auto; padding:0 24px 100px;}
-  .view{display:none; animation:fade .4s ease;}
-  .view.active{display:block;}
-  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
-
-  /* ---------- home ---------- */
-  #home-view{
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding-top:90px;
-  }
-  .hero-inner{max-width:560px;}
-  .hero-inner h1{
-    font-size:clamp(3.2rem, 11vw, 5.4rem);
-    font-style:italic;
-    color:var(--rose-deep);
-    letter-spacing:0.01em;
-  }
-  .hero-inner p{
-    margin-top:1.6rem;
-    font-size:1.15rem;
-    line-height:1.7;
-    color:var(--ink);
-    padding:4px 6px;
-  }
-  .cta{
-    margin-top:2.2rem;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    background:var(--rose);
-    color:#fff;
-    border:none;
-    padding:13px 26px;
-    border-radius:100px;
-    font-size:1rem;
-    box-shadow:0 14px 26px -14px rgba(184,57,90,0.7);
-  }
-  .cta:hover{background:var(--rose-deep);}
-
-  /* ---------- section headers ---------- */
-  .section-head{
-    padding-top:96px;
-    margin-bottom:34px;
-  }
-  .section-head h2{
-    font-size:2.2rem;
-    font-style:italic;
-    color:var(--rose-deep);
-  }
-  .section-head p{
-    color:var(--muted);
-    margin-top:8px;
-    font-size:.98rem;
-  }
-
-  /* ---------- ideas grid ---------- */
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
-    gap:18px;
-  }
-  .idea-card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:20px 18px 18px;
-    text-align:left;
-    box-shadow:var(--shadow);
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    min-height:150px;
-    transition:transform .2s ease;
-  }
-  .idea-card:hover{transform:translateY(-3px);}
-  .idea-num{
-    width:34px; height:34px;
-    border-radius:50%;
-    background:var(--gold);
-    color:#fff;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Fraunces', serif;
-    font-size:.95rem;
-  }
-  .idea-card .label{
-    font-size:1.02rem;
-    font-weight:500;
-    color:var(--ink);
-  }
-  .idea-card .hint{
-    margin-top:auto;
-    font-size:.82rem;
-    color:var(--muted);
-  }
-  .add-card{
-    border:1.5px dashed var(--line);
-    background:transparent;
-    box-shadow:none;
-    align-items:center;
-    justify-content:center;
-    color:var(--muted);
-    font-size:.95rem;
-    gap:6px;
-  }
-  .add-card:hover{border-color:var(--rose); color:var(--rose-deep);}
-  .add-card .plus{font-size:1.6rem; line-height:1;}
-
-  /* ---------- idea detail (window) ---------- */
-  .idea-panel{
-    position:fixed; inset:0;
-    background:var(--bg);
-    z-index:70;
-    transform:translateY(100%);
-    transition:transform .35s cubic-bezier(.2,.8,.2,1);
-    overflow-y:auto;
-  }
-  .idea-panel.open{transform:translateY(0);}
-  .idea-panel-inner{
-    max-width:680px;
-    margin:0 auto;
-    padding:100px 24px 80px;
-  }
-  .idea-close{
-    position:fixed;
-    top:22px; left:22px;
-    z-index:80;
-    width:46px; height:46px;
-    border:none; border-radius:14px;
-    background:var(--card);
-    box-shadow:var(--shadow);
-    font-size:1.2rem;
-    color:var(--rose-deep);
-  }
-  .idea-panel .idea-num{width:52px; height:52px; font-size:1.3rem; margin-bottom:16px;}
-  .idea-panel h2{font-size:2rem; font-style:italic; color:var(--rose-deep);}
-  .idea-panel .desc{
-    margin-top:18px;
-    line-height:1.75;
-    font-size:1.05rem;
-    min-height:140px;
-    padding:4px 6px;
-  }
-
-  /* ---------- images gallery ---------- */
-  .photo-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));
-    gap:20px;
-  }
-  .photo-slot{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:var(--shadow);
-  }
-  .photo-frame{
-    aspect-ratio:4/5;
-    background:#f3e6e2;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    position:relative;
-    cursor:pointer;
-    background-size:cover;
-    background-position:center;
-  }
-  .photo-frame .upload-hint{
-    color:var(--muted);
-    font-size:.85rem;
-    text-align:center;
-    padding:0 20px;
-  }
-  .photo-frame input[type=file]{display:none;}
-  .photo-caption{
-    padding:12px 14px 16px;
-    font-size:.92rem;
-    line-height:1.5;
-    color:var(--ink);
-  }
-  .add-photo{
-    border:1.5px dashed var(--line);
-    box-shadow:none;
-    display:flex; align-items:center; justify-content:center;
-    min-height:220px;
-    color:var(--muted);
-    background:transparent;
-    aspect-ratio:4/5;
-  }
-  .add-photo:hover{border-color:var(--rose); color:var(--rose-deep);}
-
-  @media (max-width:520px){
-    .hero-inner p{font-size:1.05rem;}
-    .section-head{padding-top:80px;}
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="K'K — ideias criativas e românticas de presentes.">
+  <title>K'K | Ideias de Presentes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="hearts" aria-hidden="true">
+    <span>♡</span><span>♡</span><span>♡</span><span>♡</span><span>♡</span>
+  </div>
 
-<button id="menu-btn" aria-label="Abrir menu">
-  <span></span><span></span><span></span>
-</button>
-<div id="overlay"></div>
-<nav id="drawer">
-  <div class="brand">K'K</div>
-  <a href="#" data-view="home-view" class="active">Início</a>
-  <a href="#" data-view="ideas-view">Ideias</a>
-  <a href="#" data-view="images-view">Imagens</a>
-</nav>
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn" aria-label="Abrir menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="brand">K'K</div>
+  </header>
 
-<main>
+  <nav class="side-menu" id="sideMenu" aria-hidden="true">
+    <button class="close-menu" id="closeMenu" aria-label="Fechar menu">×</button>
+    <div class="menu-logo">K'K</div>
+    <a href="#inicio" class="menu-link">Início</a>
+    <a href="#ideias" class="menu-link">Ideias</a>
+    <a href="#imagens" class="menu-link">Imagens com descrição</a>
+    <a href="#comentarios" class="menu-link">Comentários</a>
+  </nav>
+  <div class="menu-overlay" id="menuOverlay"></div>
 
-  <!-- HOME -->
-  <section id="home-view" class="view active">
-    <div class="hero-inner">
-      <h1 contenteditable="true" data-placeholder="K'K">K'K</h1>
-      <svg class="heart-line" viewBox="0 0 300 40" aria-hidden="true">
-        <path d="M4 20 C 60 4, 90 4, 120 20 C 140 30, 150 8, 160 18 C 175 32, 200 4, 260 20 C 275 24, 285 20, 296 20"/>
-        <circle class="dot" cx="150" cy="19" r="3.2"/>
-      </svg>
-      <p contenteditable="true" data-placeholder="A tua descrição...">Eu sou K'K e sou encalhada e tenho muitas ideias de presentes para os vossos namorados, então aproveitem!!</p>
-      <button class="cta" data-goto="ideas-view">Ver ideias →</button>
-    </div>
-  </section>
-
-  <!-- IDEIAS -->
-  <section id="ideas-view" class="view">
-    <div class="section-head">
-      <h2>Ideias</h2>
-      <p>Clica num número para abrires o espaço dedicado a essa ideia.</p>
-    </div>
-    <div class="grid" id="ideas-grid"></div>
-  </section>
-
-  <!-- IMAGENS -->
-  <section id="images-view" class="view">
-    <div class="section-head">
-      <h2>Imagens</h2>
-      <p>Toca numa moldura para carregares a foto e escreve a descrição por baixo.</p>
-    </div>
-    <div class="photo-grid" id="photo-grid"></div>
-  </section>
-
-</main>
-
-<!-- painéis de detalhe das ideias são inseridos aqui por JS -->
-<div id="idea-panels"></div>
-
-<script>
-  // ---------- menu ----------
-  const menuBtn = document.getElementById('menu-btn');
-  const drawer = document.getElementById('drawer');
-  const overlay = document.getElementById('overlay');
-
-  function toggleMenu(open){
-    const willOpen = open !== undefined ? open : !drawer.classList.contains('open');
-    drawer.classList.toggle('open', willOpen);
-    overlay.classList.toggle('show', willOpen);
-    menuBtn.classList.toggle('open', willOpen);
-  }
-  menuBtn.addEventListener('click', () => toggleMenu());
-  overlay.addEventListener('click', () => toggleMenu(false));
-
-  // ---------- view switching ----------
-  const views = document.querySelectorAll('.view');
-  const navLinks = document.querySelectorAll('#drawer a');
-
-  function showView(id){
-    views.forEach(v => v.classList.toggle('active', v.id === id));
-    navLinks.forEach(a => a.classList.toggle('active', a.dataset.view === id));
-    window.scrollTo({top:0, behavior:'instant'});
-    toggleMenu(false);
-  }
-  navLinks.forEach(a => a.addEventListener('click', e => {
-    e.preventDefault();
-    showView(a.dataset.view);
-  }));
-  document.querySelectorAll('[data-goto]').forEach(btn => {
-    btn.addEventListener('click', () => showView(btn.dataset.goto));
-  });
-
-  // ---------- ideas: create cards + panels ----------
-  const ideasGrid = document.getElementById('ideas-grid');
-  const panelsHost = document.getElementById('idea-panels');
-  let ideaCount = 0;
-
-  function createIdea(){
-    ideaCount++;
-    const n = ideaCount;
-
-    const card = document.createElement('button');
-    card.className = 'idea-card';
-    card.innerHTML = `
-      <div class="idea-num">${n}</div>
-      <div class="label" id="idea-label-${n}">Ideia ${n}</div>
-      <div class="hint">Toca para abrir</div>
-    `;
-    card.addEventListener('click', () => openIdea(n));
-    ideasGrid.insertBefore(card, addIdeaBtn);
-
-    const panel = document.createElement('div');
-    panel.className = 'idea-panel';
-    panel.id = `idea-panel-${n}`;
-    panel.innerHTML = `
-      <button class="idea-close" data-close="${n}" aria-label="Fechar">←</button>
-      <div class="idea-panel-inner">
-        <div class="idea-num">${n}</div>
-        <h2 contenteditable="true" data-placeholder="Título da ideia ${n}" id="idea-title-${n}">Ideia ${n}</h2>
-        <div class="desc" contenteditable="true" data-placeholder="Descreve aqui a ideia, o tutorial ou os materiais necessários...">​</div>
+  <main id="inicio">
+    <section class="hero">
+      <div class="hero-content reveal">
+        <p class="eyebrow">PRESENTES • CARINHO • CRIATIVIDADE</p>
+        <h1>Ideias que transformam<br><em>momentos em memórias.</em></h1>
+        <p class="hero-text">Eu sou K'K e sou encalhada e tenho muitas ideias de presentes para os vossos namorados, então aproveitem!!</p>
+        <a href="#ideias" class="primary-btn">Ver ideias <span>→</span></a>
       </div>
-    `;
-    panelsHost.appendChild(panel);
+      <div class="hero-card reveal">
+        <!-- COLOQUE A SUA FOTO DE APRESENTAÇÃO AQUI -->
+        <div class="image-placeholder large">
+          <span>♡</span>
+          <small>FOTO DE APRESENTAÇÃO</small>
+        </div>
+        <div class="floating-note">feito com carinho ♡</div>
+      </div>
+    </section>
 
-    panel.querySelector(`#idea-title-${n}`).addEventListener('input', e => {
-      const label = document.getElementById(`idea-label-${n}`);
-      label.textContent = e.target.textContent.trim() || `Ideia ${n}`;
-    });
-    panel.querySelector('.idea-close').addEventListener('click', () => closeIdea(n));
-  }
+    <section class="section" id="ideias">
+      <div class="section-heading reveal">
+        <div>
+          <p class="eyebrow">ESCOLHA UMA</p>
+          <h2>Ideias de presentes</h2>
+        </div>
+        <p>Toque em uma ideia para descobrir todos os detalhes.</p>
+      </div>
+      <div class="ideas-grid" id="ideasGrid"></div>
+    </section>
 
-  function openIdea(n){
-    document.getElementById(`idea-panel-${n}`).classList.add('open');
-  }
-  function closeIdea(n){
-    document.getElementById(`idea-panel-${n}`).classList.remove('open');
-  }
+    <section class="section gallery-section" id="imagens">
+      <div class="section-heading reveal">
+        <div>
+          <p class="eyebrow">GALERIA</p>
+          <h2>Imagens com descrição</h2>
+        </div>
+        <p>Espaços preparados para as suas fotos e textos.</p>
+      </div>
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </section>
 
-  const addIdeaBtn = document.createElement('button');
-  addIdeaBtn.className = 'idea-card add-card';
-  addIdeaBtn.innerHTML = `<span class="plus">+</span><span>Nova ideia</span>`;
-  addIdeaBtn.addEventListener('click', () => createIdea());
-  ideasGrid.appendChild(addIdeaBtn);
+    <section class="section comments-section" id="comentarios">
+      <div class="comments-box reveal">
+        <div>
+          <p class="eyebrow">COMUNIDADE</p>
+          <h2>Comentários</h2>
+          <p>Gostou de alguma ideia? Entre na sua conta para deixar a sua opinião.</p>
+        </div>
+        <div id="authArea"></div>
+        <div id="commentsList" class="comments-list"></div>
+      </div>
+    </section>
+  </main>
 
-  for(let i=0; i<6; i++) createIdea();
+  <footer>
+    <div class="footer-logo">K'K</div>
+    <p>Ideias feitas para criar momentos especiais.</p>
+  </footer>
 
-  // ---------- images ----------
-  const photoGrid = document.getElementById('photo-grid');
-  let photoCount = 0;
+  <button class="top-btn" id="topBtn" aria-label="Voltar ao topo">↑</button>
 
-  function createPhoto(){
-    photoCount++;
-    const n = photoCount;
+  <div class="modal" id="ideaModal" aria-hidden="true">
+    <div class="modal-panel">
+      <button class="modal-close" id="modalClose" aria-label="Fechar">×</button>
+      <button class="back-btn" id="backBtn">← Voltar para ideias</button>
+      <div id="ideaDetail"></div>
+    </div>
+  </div>
 
-    const slot = document.createElement('div');
-    slot.className = 'photo-slot';
-    slot.innerHTML = `
-      <label class="photo-frame" id="photo-frame-${n}">
-        <span class="upload-hint">Toca para<br>carregar foto</span>
-        <input type="file" accept="image/*" id="photo-input-${n}">
-      </label>
-      <div class="photo-caption" contenteditable="true" data-placeholder="Escreve a descrição desta foto...">​</div>
-    `;
-    photoGrid.insertBefore(slot, addPhotoBtn);
+  <div class="modal" id="authModal" aria-hidden="true">
+    <div class="auth-panel">
+      <button class="modal-close" id="authClose" aria-label="Fechar">×</button>
+      <div id="authContent"></div>
+    </div>
+  </div>
 
-    const input = slot.querySelector(`#photo-input-${n}`);
-    const frame = slot.querySelector(`#photo-frame-${n}`);
-    input.addEventListener('change', () => {
-      const file = input.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        frame.style.backgroundImage = `url(${e.target.result})`;
-        frame.querySelector('.upload-hint').style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  const addPhotoBtn = document.createElement('button');
-  addPhotoBtn.className = 'photo-slot add-photo';
-  addPhotoBtn.innerHTML = `<span class="plus" style="font-size:1.6rem;">+ nova foto</span>`;
-  addPhotoBtn.addEventListener('click', () => createPhoto());
-  photoGrid.appendChild(addPhotoBtn);
-
-  for(let i=0; i<3; i++) createPhoto();
-</script>
+  <script src="script.js"></script>
 </body>
 </html>
